@@ -1,7 +1,7 @@
 {
   "name": "sfdx-plugin-easymerge",
   "description": "plugin for sfdx which formats the metadata for easier merging and conflict handling",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Christoph Metz",
   "bugs": "https://github.com/cmetz/sfdx-plugin-easymerge/issues",
   "dependencies": {

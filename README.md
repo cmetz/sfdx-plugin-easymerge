@@ -24,7 +24,7 @@ $ npm install -g sfdx-plugin-easymerge
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-sfdx-plugin-easymerge/0.0.1 linux-x64 node-v15.14.0
+sfdx-plugin-easymerge/0.0.2 linux-x64 node-v15.14.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -51,7 +51,7 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [lib/commands/easymerge/fix.js](https://github.com/cmetz/sfdx-plugin-easymerge/blob/v0.0.1/lib/commands/easymerge/fix.js)_
+_See code: [lib/commands/easymerge/fix.js](https://github.com/cmetz/sfdx-plugin-easymerge/blob/v0.0.2/lib/commands/easymerge/fix.js)_
 <!-- commandsstop -->
 <!-- debugging-your-plugin -->
 # Debugging your plugin
