@@ -1,7 +1,9 @@
 sfdx-plugin-easymerge
 =====
 
-gfo tools
+SFDX plugin for which reformats metadata for easier merge and conflict handling.
+
+Alpha release, currently it only orders the plattformActionList items by name on the layout
 
 [![Version](https://img.shields.io/npm/v/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
 [![CircleCI](https://circleci.com/gh/gulp2/sfdx-plugin-easymerge/tree/master.svg?style=shield)](https://circleci.com/gh/gulp2/sfdx-plugin-easymerge/tree/master)
