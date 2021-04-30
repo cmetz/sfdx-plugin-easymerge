@@ -1,14 +1,11 @@
 sfdx-plugin-easymerge
 =====
 
-SFDX plugin for which reformats metadata for easier merge and conflict handling.
+SFDX plugin which reformats metadata for easier merge and conflict handling.
 
-Alpha release, currently it only orders the plattformActionList items by name on the layout
+Alpha release, currently it only orders the plattformActionList items by name on the layouts.
 
 [![Version](https://img.shields.io/npm/v/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
-[![CircleCI](https://circleci.com/gh/cmetz/sfdx-plugin-easymerge/tree/master.svg?style=shield)](https://circleci.com/gh/cmetz/sfdx-plugin-easymerge/tree/master)
-[![Appveyor CI](https://ci.appveyor.com/api/projects/status/github/cmetz/sfdx-plugin-easymerge?branch=master&svg=true)](https://ci.appveyor.com/project/heroku/sfdx-plugin-easymerge/branch/master)
-[![Codecov](https://codecov.io/gh/cmetz/sfdx-plugin-easymerge/branch/master/graph/badge.svg)](https://codecov.io/gh/cmetz/sfdx-plugin-easymerge)
 [![Greenkeeper](https://badges.greenkeeper.io/cmetz/sfdx-plugin-easymerge.svg)](https://greenkeeper.io/)
 [![Known Vulnerabilities](https://snyk.io/test/github/cmetz/sfdx-plugin-easymerge/badge.svg)](https://snyk.io/test/github/cmetz/sfdx-plugin-easymerge)
 [![Downloads/week](https://img.shields.io/npm/dw/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
