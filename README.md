@@ -3,7 +3,9 @@ sfdx-plugin-easymerge
 
 SFDX plugin which reformats metadata for easier merge and conflict handling.
 
-Alpha release, currently it only orders the plattformActionList items by name on the layouts.
+Alpha release!
+
+Currently it only orders and collapses the plattformActionList on the layouts by hooking into sfdx retrieve.
 
 [![Version](https://img.shields.io/npm/v/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
 [![Greenkeeper](https://badges.greenkeeper.io/cmetz/sfdx-plugin-easymerge.svg)](https://greenkeeper.io/)
@@ -21,7 +23,7 @@ $ npm install -g sfdx-plugin-easymerge
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-sfdx-plugin-easymerge/0.0.2 linux-x64 node-v15.14.0
+sfdx-plugin-easymerge/0.0.2 linux-x64 node-v16.0.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND

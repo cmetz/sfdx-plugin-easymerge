@@ -1,7 +1,7 @@
 {
   "name": "sfdx-plugin-easymerge",
   "description": "plugin for sfdx which formats the metadata for easier merging and conflict handling",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Christoph Metz",
   "bugs": "https://github.com/cmetz/sfdx-plugin-easymerge/issues",
   "dependencies": {
@@ -11,7 +11,8 @@
     "@salesforce/command": "^2",
     "@salesforce/core": "^2",
     "tslib": "^1",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.4.23",
+    "xmlbuilder": "15.1.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
@@ -50,7 +51,8 @@
       "@oclif/plugin-help"
     ],
     "hooks": {
-      "postretrieve": "./lib/hooks/postretrieve/metadataFixLayouts"
+      "postretrieve": "./lib/hooks/postretrieve/metadataFixLayouts",
+      "postsourceupdate": "./lib/hooks/postsourceupdate/collapseTags"
     }
   },
   "repository": "cmetz/sfdx-plugin-easymerge",
