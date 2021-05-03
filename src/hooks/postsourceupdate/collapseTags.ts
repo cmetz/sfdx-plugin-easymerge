@@ -2,13 +2,11 @@
 // Builder Author: Marek Kubica 
 // Package - LICENSE: MIT
 
-
+import { Easymerge } from "../../easymerge";
 import { promises as fs } from 'fs';
 import { parseString } from 'xml2js';
 import { Command, Hook } from '@oclif/config';
 import * as xmlbuilder from 'xmlbuilder'
-
-
 
 type HookFunction = (this: Hook.Context, options: HookOptions) => any;
 
@@ -35,38 +33,49 @@ type workspaceElement = {
 };
 
 
-
 export const hook: HookFunction = async function (options) {
-  console.log('PostSourceUpdateResult Hook Running');
+    console.log('PostSourceUpdateResult Hook Running');
 
-  // Run only on the pull command, not the retrieve command
-  // if (options.commandId === 'force:source:pull') {
+    let pluginConfig = await Easymerge.getConfig();
+    let collapseConfig = pluginConfig.collapseTags || [];
+    let types: Array<string> = new Array<string>();
+    let tags: Array<string> = new Array<string>();
+    for (const tag of collapseConfig.values()) {
+        const newType = tag.split('.')[0]
+        if (!types.includes(newType)) {
+            types.push(newType);
+        }
+        if (!tags.includes(tag)) {
+            tags.push(tag);
+        }
+    }
     if (options.result) {
         for (const k in options.result) {
             const result = options.result[k];
             for (const element of result.workspaceElements) {
-                if (element.type === 'Layout') {
-                    await collapseElement(element);
+                if (types.includes(element.type)) {
+                    await collapseElement(element, tags);
                 }
             };
         };
     }
 };
 
-function requiresCDATA(entry: any): boolean {
-    return typeof(entry) === "string" && (entry.indexOf('&') >= 0 || entry.indexOf('>') >= 0 || entry.indexOf('<') >= 0)
+function requiresEscaping(entry: any): boolean {
+    return typeof(entry) === "string" && (entry.indexOf('&') >= 0 || entry.indexOf('>') >= 0 || entry.indexOf('<') >= 0 || entry.indexOf('\'') >= 0 || entry.indexOf('"') >= 0)
 }
 
 
-function wrapCDATA(entry: any): string {
-    return "<![CDATA[" + escapeCDATA(entry.toString()) + "]]>"
+function escapeText(entry: any): string {
+    // first &
+    return entry.toString().replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;')
 }
 
-function escapeCDATA(entry: string): string {
-  return entry.replace(']]>', ']]]]><![CDATA[>')
-}
-
-async function collapseElement(element: workspaceElement) {
+async function collapseElement(element: workspaceElement, tags:Array<String>) {
 
     const incomingXml = await fs.readFile(element.filePath, 'utf-8');
     const incomingJson = await new Promise<any>((resolve, reject) =>
@@ -79,8 +88,8 @@ async function collapseElement(element: workspaceElement) {
 
     const render = (element: xmlbuilder.XMLElement, obj: any) => {
         if (typeof(obj) !== 'object') {
-            if (requiresCDATA(obj)) {
-                element.raw(wrapCDATA(obj))
+            if (requiresEscaping(obj)) {
+                element.raw(escapeText(obj))
             } else {
                 element.txt(obj);
             }
@@ -99,16 +108,16 @@ async function collapseElement(element: workspaceElement) {
                         }
                     }
                 } else if (key === '@') {
-                    if (requiresCDATA(child)) {
-                        element.raw(wrapCDATA(child))
+                    if (requiresEscaping(child)) {
+                        element.raw(escapeText(child))
                     } else {
                         element = element.txt(child.toString())
                     }
                 } else if (Array.isArray(child)) {
                     for (const entry of Object.values(child)) {
                         if (typeof(entry) === 'string') {
-                            if (requiresCDATA(entry)) {
-                                element.ele(key).raw(wrapCDATA(entry)).up()
+                            if (requiresEscaping(entry)) {
+                                element.ele(key).raw(escapeText(entry)).up()
                             } else {
                                 element = element.ele(key, entry).up()
                             }
@@ -119,8 +128,8 @@ async function collapseElement(element: workspaceElement) {
                 } else if (typeof(child) === 'object') {
                     element = render(element.ele(key), child).up()
                 } else {
-                    if (requiresCDATA(child)) {
-                        element = element.ele(key).raw(wrapCDATA(child)).up();
+                    if (requiresEscaping(child)) {
+                        element = element.ele(key).raw(escapeText(child)).up();
                     } else {
                         element = element.ele(key, child.toString()).up();
                     }
@@ -135,16 +144,36 @@ async function collapseElement(element: workspaceElement) {
     const rootElement = xmlbuilder.create(rootName, {'version': '1.0', 'encoding': 'UTF-8'});
 
     const newIndent = (node: xmlbuilder.XMLElement, options: xmlbuilder.WriterOptions, level: number): string => {
-        if ((node.parent && node.parent.name === "platformActionListItems" && options.state === xmlbuilder.writerState.OpenTag) ||
-        (node.name === "platformActionListItems" && options.state === xmlbuilder.writerState.CloseTag)) {
+        let nodePath = new Array<string>();
+        let lastNode = node;
+        while (lastNode) {
+            if (lastNode.type === xmlbuilder.nodeType.Element && lastNode.name) {
+                nodePath.unshift(lastNode.name);
+            }
+            lastNode = lastNode.parent
+        }
+        const parentNodePath = nodePath.slice(0, -1).join('.');
+        const currentNodePath = nodePath.join('.');
+        if ((tags.includes(parentNodePath) && options.state === xmlbuilder.writerState.OpenTag) ||
+            (tags.includes(currentNodePath) && options.state === xmlbuilder.writerState.CloseTag)) {
             return ''
         }
         return options.writer['_indent'](node, options, level);
     };
 
     const newEndLine = (node: xmlbuilder.XMLElement, options: xmlbuilder.WriterOptions, level: number): string => {
-        if ((node.parent && node.parent.name === "platformActionListItems" && options.state === xmlbuilder.writerState.CloseTag) ||
-        (node.name === "platformActionListItems" && options.state === xmlbuilder.writerState.OpenTag)) {
+        let nodePath = new Array<string>();
+        let lastNode = node;
+        while (lastNode) {
+            if (lastNode.type === xmlbuilder.nodeType.Element && lastNode.name) {
+                nodePath.unshift(lastNode.name);
+            }
+            lastNode = lastNode.parent
+        }
+        const parentNodePath = nodePath.slice(0, -1).join('.');
+        const currentNodePath = nodePath.join('.');
+        if ((tags.includes(parentNodePath) && options.state === xmlbuilder.writerState.CloseTag) ||
+            (tags.includes(currentNodePath) && options.state === xmlbuilder.writerState.OpenTag)) {
             return ''
         }
         return options.writer['_endline'](node, options, level);

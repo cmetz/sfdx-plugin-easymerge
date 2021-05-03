@@ -1,78 +1,47 @@
 sfdx-plugin-easymerge
 =====
 
-SFDX plugin which reformats metadata for easier merge and conflict handling.
-
-Alpha release!
-
-Currently it only orders and collapses the plattformActionList on the layouts by hooking into sfdx retrieve.
-
 [![Version](https://img.shields.io/npm/v/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
 [![Greenkeeper](https://badges.greenkeeper.io/cmetz/sfdx-plugin-easymerge.svg)](https://greenkeeper.io/)
 [![Known Vulnerabilities](https://snyk.io/test/github/cmetz/sfdx-plugin-easymerge/badge.svg)](https://snyk.io/test/github/cmetz/sfdx-plugin-easymerge)
 [![Downloads/week](https://img.shields.io/npm/dw/sfdx-plugin-easymerge.svg)](https://npmjs.org/package/sfdx-plugin-easymerge)
 [![License](https://img.shields.io/npm/l/sfdx-plugin-easymerge.svg)](https://github.com/cmetz/sfdx-plugin-easymerge/blob/master/package.json)
 
-<!-- toc -->
-* [Debugging your plugin](#debugging-your-plugin)
-<!-- tocstop -->
-<!-- install -->
-<!-- usage -->
+SFDX plugin which reformats metadata for easier merge and conflict handling.
+
+**Alpha release!**
+
+It orders the plattformActionList by name on the layouts by hooking into sfdx retrieve.
+
+It also allows you to configure nodes(tags) inside your xml-metadata which should not be pretty printed, by allowing them to be collapsed in a single line.
+
+# Install
+
 ```sh-session
-$ npm install -g sfdx-plugin-easymerge
-$ sfdx COMMAND
-running command...
-$ sfdx (-v|--version|version)
-sfdx-plugin-easymerge/0.0.2 linux-x64 node-v16.0.0
-$ sfdx --help [COMMAND]
-USAGE
-  $ sfdx COMMAND
-...
-```
-<!-- usagestop -->
-<!-- commands -->
-* [`sfdx easymerge:fix [-f <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-easymergefix--f-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-
-## `sfdx easymerge:fix [-f <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-```
-undefined
-
-USAGE
-  $ sfdx easymerge:fix [-f <string>] [--json] [--loglevel 
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -f, --sfdxsourcefolder=sfdxsourcefolder                                           SFDX source folder
-  --json                                                                            format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+$ sfdx plugin:install sfdx-plugin-easymerge
 ```
 
-_See code: [lib/commands/easymerge/fix.js](https://github.com/cmetz/sfdx-plugin-easymerge/blob/v0.0.2/lib/commands/easymerge/fix.js)_
-<!-- commandsstop -->
-<!-- debugging-your-plugin -->
-# Debugging your plugin
-We recommend using the Visual Studio Code (VS Code) IDE for your plugin development. Included in the `.vscode` directory of this plugin is a `launch.json` config file, which allows you to attach a debugger to the node process when running your commands.
+# Configure collapsing
 
-To debug the `hello:org` command: 
-1. Start the inspector
-  
-If you linked your plugin to the sfdx cli, call your command with the `dev-suspend` switch: 
-```sh-session
-$ sfdx hello:org -u myOrg@example.com --dev-suspend
+The collapsing can be configured in you sfdx-project.json.
+
+Just add the complete XML-NodePath seperated by '.' the to the plugin configuration e.g.:
+
 ```
-  
-Alternatively, to call your command using the `bin/run` script, set the `NODE_OPTIONS` environment variable to `--inspect-brk` when starting the debugger:
-```sh-session
-$ NODE_OPTIONS=--inspect-brk bin/run hello:org -u myOrg@example.com
+  "plugins": {
+    "easymerge": {
+      "collapseTags": [
+        "Layout.layoutSections.layoutColumns.layoutItems",
+        "Layout.platformActionList.platformActionListItems"
+      ]
+    }
+  }
 ```
 
-2. Set some breakpoints in your command code
-3. Click on the Debug icon in the Activity Bar on the side of VS Code to open up the Debug view.
-4. In the upper left hand corner of VS Code, verify that the "Attach to Remote" launch configuration has been chosen.
-5. Hit the green play button to the left of the "Attach to Remote" launch configuration window. The debugger should now be suspended on the first line of the program. 
-6. Hit the green play button at the top middle of VS Code (this play button will be to the right of the play button that you clicked in step #5).
-<br><img src=".images/vscodeScreenshot.png" width="480" height="278"><br>
-Congrats, you are debugging!
+Like:
+
+<img src=".images/collapseTagsConfigExample.png" width="800"><br>
+
+The Result after your next retrieve should contain the configured XML-NodePathes to by collapsed:
+
+<img src=".images/collapseTagsExample.png" width="800"><br>
