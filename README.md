@@ -42,6 +42,6 @@ Like:
 
 <img src=".images/collapseTagsConfigExample.png" width="800"><br>
 
-The Result after your next retrieve should contain the configured XML-NodePathes to by collapsed:
+The Result after your next retrieve should contain the configured XML-NodePaths to be collapsed:
 
 <img src=".images/collapseTagsExample.png" width="800"><br>
